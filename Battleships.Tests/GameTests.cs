@@ -99,5 +99,61 @@ namespace Battleships.Tests
 
             Assert.Throws(typeof(ArgumentException), () => game.Initialize(null));
         }
+
+        [Test]
+        public void FireSimpleShot()
+        {
+            var game = new Game();
+
+            var gameOptions = new GameOptions()
+            {
+                BoardHeight = 10,
+                BoardWidth = 10,
+                Ships = new List<int> { 1, 2, 3 }
+            };
+
+            game.Initialize(gameOptions);
+            game.Fire(5, 5);
+        }
+
+        [Test]
+        public void FireShotOutsideOfTheBoard()
+        {
+            var game = new Game();
+
+            var gameOptions = new GameOptions()
+            {
+                BoardHeight = 10,
+                BoardWidth = 10,
+                Ships = new List<int> { 1, 2, 3 }
+            };
+
+            game.Initialize(gameOptions);
+            Assert.Throws(typeof(InvalidOperationException), () => game.Fire(50, 5));
+        }
+
+        [Test]
+        public void FireShotTwice()
+        {
+            var game = new Game();
+
+            var gameOptions = new GameOptions()
+            {
+                BoardHeight = 10,
+                BoardWidth = 10,
+                Ships = new List<int> { 1, 2, 3 }
+            };
+
+            game.Initialize(gameOptions);
+            Assert.AreEqual(game.Fire(4, 4), game.Fire(4, 4));
+        }
+
+        [Test]
+        public void FireSimpleShotWhenBoardIsNotInitialized()
+        {
+            var game = new Game();
+
+            Assert.Throws(typeof(InvalidOperationException), () => game.Fire(5, 5));
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Battleships
@@ -21,6 +22,11 @@ namespace Battleships
             Console.WriteLine("Board has been successfully created with the following options:");
             Console.WriteLine($"Board size:{ gameOptions.BoardWidth} x { gameOptions.BoardHeight}");
             Console.WriteLine($"Ships collection: {gameOptions.Ships.OrderByDescending(x => x)}");
+        }
+
+        public ShotStatus Fire(int x, int y)
+        {
+            throw new NotImplementedException();
         }
     }
 }
