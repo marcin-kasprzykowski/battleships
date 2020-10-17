@@ -1,3 +1,5 @@
 /Battleships/bin
 /Battleships/obj
 /.vs
+/Battleships.Tests/bin
+/Battleships.Tests/obj
