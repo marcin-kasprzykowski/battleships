@@ -17,6 +17,10 @@ namespace Battleships
             {
                 throw new ArgumentException("Board dimensions must have a positive values.");
             }
+
+            Console.WriteLine("Board has been successfully created with the following options:");
+            Console.WriteLine($"Board size:{ gameOptions.BoardWidth} x { gameOptions.BoardHeight}");
+            Console.WriteLine($"Ships collection: {gameOptions.Ships.OrderByDescending(x => x)}");
         }
     }
 }
