@@ -34,7 +34,7 @@ namespace Battleships.Tests
                 Ships = new List<int> { 1 }
             };
 
-            game.Initialize(gameOptions);
+            Assert.Throws(typeof(ArgumentException), () => game.Initialize(gameOptions));
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace Battleships.Tests
             {
                 BoardHeight = 10,
                 BoardWidth = 10,
-                Ships = new List<int> { 8,4,6,4,4,7,5,7,9,5,8,9,6,2 }
+                Ships = new List<int> { 8, 4, 6, 4, 4, 7, 5, 7, 9, 5, 8, 9, 6, 2 }
             };
 
             game.Initialize(gameOptions);
@@ -83,13 +83,21 @@ namespace Battleships.Tests
         }
 
         [Test]
-        public void StartGameWithNoOptions()
+        public void StartGameWithEmptyOptions()
         {
             var game = new Game();
 
             var gameOptions = new GameOptions();
 
-            game.Initialize(gameOptions);
+            Assert.Throws(typeof(ArgumentException), () => game.Initialize(gameOptions));
+        }
+
+        [Test]
+        public void StartGameWithNullOptions()
+        {
+            var game = new Game();
+
+            Assert.Throws(typeof(ArgumentException), () => game.Initialize(null));
         }
     }
 }

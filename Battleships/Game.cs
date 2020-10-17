@@ -8,7 +8,15 @@ namespace Battleships
     {
         public void Initialize(GameOptions gameOptions)
         {
-            throw new NotImplementedException();
+            if (gameOptions == null)
+            {
+                throw new ArgumentException("Game options cannot be null.");
+            }
+
+            if (gameOptions.BoardHeight < 1 || gameOptions.BoardWidth < 1)
+            {
+                throw new ArgumentException("Board dimensions must have a positive values.");
+            }
         }
     }
 }
