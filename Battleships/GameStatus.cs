@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Battleships
 {
-    public enum ShotStatus
+    public enum GameStatus
     {
-        Hit,
-        Miss,
-        Sunk
+        New,
+        BoardInitialized,
+        Concluded
     }
 }

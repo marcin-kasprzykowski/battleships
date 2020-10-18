@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Battleships.Tests
 {
@@ -44,12 +45,12 @@ namespace Battleships.Tests
 
             var gameOptions = new GameOptions()
             {
-                BoardHeight = 10,
-                BoardWidth = 10,
+                BoardHeight = 2,
+                BoardWidth = 2,
                 Ships = new List<int> { 8, 4, 6, 4, 4, 7, 5, 7, 9, 5, 8, 9, 6, 2 }
             };
 
-            game.Initialize(gameOptions);
+            Assert.Throws(typeof(InvalidOperationException), () => game.Initialize(gameOptions));
         }
 
         [Test]
@@ -64,7 +65,7 @@ namespace Battleships.Tests
                 Ships = new List<int> { 11 }
             };
 
-            game.Initialize(gameOptions);
+            Assert.Throws(typeof(InvalidOperationException), () => game.Initialize(gameOptions));
         }
 
         [Test]
@@ -113,7 +114,7 @@ namespace Battleships.Tests
             };
 
             game.Initialize(gameOptions);
-            game.Fire(5, 5);
+            game.Fire((5, 5));
         }
 
         [Test]
@@ -129,7 +130,8 @@ namespace Battleships.Tests
             };
 
             game.Initialize(gameOptions);
-            Assert.Throws(typeof(InvalidOperationException), () => game.Fire(50, 5));
+            Assert.Throws(typeof(InvalidOperationException), () => game.Fire((5, 11)));
+            Assert.Throws(typeof(InvalidOperationException), () => game.Fire((11, 5)));
         }
 
         [Test]
@@ -145,7 +147,7 @@ namespace Battleships.Tests
             };
 
             game.Initialize(gameOptions);
-            Assert.AreEqual(game.Fire(4, 4), game.Fire(4, 4));
+            Assert.AreEqual(game.Fire((4, 4)), game.Fire((4, 4)));
         }
 
         [Test]
@@ -153,7 +155,66 @@ namespace Battleships.Tests
         {
             var game = new Game();
 
-            Assert.Throws(typeof(InvalidOperationException), () => game.Fire(5, 5));
+            Assert.Throws(typeof(InvalidOperationException), () => game.Fire((5, 5)));
+        }
+        
+        [Test]
+        public void FireShotsAndAssertHitCount()
+        {
+            var game = new Game();
+
+            var gameOptions = new GameOptions()
+            {
+                BoardHeight = 5,
+                BoardWidth = 5,
+                Ships = new List<int> { 1, 2, 3 }
+            };
+
+            game.Initialize(gameOptions);
+
+            int hitCount = 0;
+            for (int x = 0; x < gameOptions.BoardWidth; x++)
+            {
+                for (int y = 0; y < gameOptions.BoardHeight; y++)
+                {
+                    var shotResult = game.Fire((x, y));
+                    if (shotResult == ShotResult.Hit  || shotResult == ShotResult.Sunk)
+                    {
+                        hitCount++;
+                    }
+                }
+            }
+
+            Assert.AreEqual(hitCount, gameOptions.Ships.Sum());
+        }
+
+        [Test]
+        public void FireShotsAndAssertSunkCount()
+        {
+            var game = new Game();
+
+            var gameOptions = new GameOptions()
+            {
+                BoardHeight = 5,
+                BoardWidth = 5,
+                Ships = new List<int> { 1, 2, 3 }
+            };
+
+            game.Initialize(gameOptions);
+
+            int sunkCount = 0;
+            for (int x = 0; x < gameOptions.BoardWidth; x++)
+            {
+                for (int y = 0; y < gameOptions.BoardHeight; y++)
+                {
+                    if (game.Fire((x, y)) == ShotResult.Sunk)
+                    {
+                        sunkCount++;
+                    }
+                }
+            }
+
+            Assert.AreEqual(sunkCount, gameOptions.Ships.Count());
         }
     }
 }
