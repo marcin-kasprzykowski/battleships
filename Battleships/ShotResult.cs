@@ -8,6 +8,7 @@ namespace Battleships
     {
         Hit,
         Miss,
-        Sunk
+        Sunk,
+        GameWon
     }
 }

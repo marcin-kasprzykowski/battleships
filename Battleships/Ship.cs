@@ -8,5 +8,6 @@ namespace Battleships
     {
         public bool IsHorizontal { get; set; }
         public List<(int x, int y)> Coordinates { get; set; }
+        public bool IsSunk { get; set; }
     }
 }
