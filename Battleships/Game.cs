@@ -8,9 +8,7 @@ namespace Battleships
     {
         private const int ShipArrangeRetryLimit = 10;
 
-        BoardFieldStatus[,] board;
-        public BoardFieldStatus[,] Board { get { return board.Clone() as BoardFieldStatus[,]; } }
-        private GameStatus gameStatus = GameStatus.New;
+        public Board Board { get; private set; }
         private List<Ship> ships;
         public GameOptions GameOptions { get; private set; }
 
@@ -18,18 +16,18 @@ namespace Battleships
         {
             (int x, int y) zeroBasedCoordinates = (coordinates.x - 1, coordinates.y - 1);
 
-            if (gameStatus != GameStatus.BoardInitialized)
+            if (Board == null)
             {
                 throw new InvalidOperationException("Board must be initialized before any shots are fired.");
             }
 
-            if (zeroBasedCoordinates.x > board.GetUpperBound(0) || zeroBasedCoordinates.y > board.GetUpperBound(1) || zeroBasedCoordinates.x < 0 || zeroBasedCoordinates.y < 0)
+            if (zeroBasedCoordinates.x >= GameOptions.BoardWidth || zeroBasedCoordinates.y >= GameOptions.BoardHeight || zeroBasedCoordinates.x < 0 || zeroBasedCoordinates.y < 0)
             {
                 throw new InvalidOperationException("The shot was fired outside of the board.");
             }
 
-            var boardFieldStatus = board[zeroBasedCoordinates.x, zeroBasedCoordinates.y];
-            board[zeroBasedCoordinates.x, zeroBasedCoordinates.y] |= BoardFieldStatus.AlreadyFiredUpon;
+            var boardFieldStatus = Board.GetFieldStatus(zeroBasedCoordinates);
+            Board.AddFlag(zeroBasedCoordinates, BoardFieldStatus.AlreadyFiredUpon);
 
             if (boardFieldStatus.HasFlag(BoardFieldStatus.Ship))
             {
@@ -62,8 +60,9 @@ namespace Battleships
             {
                 throw new ArgumentException("Board dimensions must have a positive values.");
             }
-
-            SetupBoard(gameOptions);
+            Board = new Board();
+            Board.SetupBoard(gameOptions);
+            ArrangeShips(gameOptions);
         }
 
         private void ArrangeShips(GameOptions gameOptions)
@@ -94,7 +93,7 @@ namespace Battleships
                         //check whether proposed placement is correct (there must not be any other ships on any of the considered fields)
                         for (int i = 0; i < ship; i++)
                         {
-                            if (board[isHorizontal ? placementStartIndex + i : columnOrRowIndex, isHorizontal ? columnOrRowIndex : placementStartIndex + i] == BoardFieldStatus.Ship)
+                            if (Board.GetFieldStatus((isHorizontal ? placementStartIndex + i : columnOrRowIndex, isHorizontal ? columnOrRowIndex : placementStartIndex + i)) == BoardFieldStatus.Ship)
                             {
                                 //another ship is already present on this field. Placement retry will occur
                                 shipProperlyPlaced = false;
@@ -108,7 +107,7 @@ namespace Battleships
                             for (int i = 0; i < ship; i++)
                             {
                                 (int x, int y) coordinates = (isHorizontal ? placementStartIndex + i : columnOrRowIndex, isHorizontal ? columnOrRowIndex : placementStartIndex + i);
-                                board[coordinates.x, coordinates.y] = BoardFieldStatus.Ship;
+                                Board.SetFlag(coordinates, BoardFieldStatus.Ship);
                                 coordinatesList.Add(coordinates);
                             }
 
@@ -130,7 +129,7 @@ namespace Battleships
 
         private Ship IsLastChunkOfShip((int x, int y) coordinates)
         {
-            //there must be exactly one hit ship
+            //there must be exactly one hit ship put in these coordinates
             var damagedShip = ships.Single(x => x.Coordinates.Any(y => y == coordinates));
 
             //check if all ship's chunks have already been hit
@@ -140,28 +139,13 @@ namespace Battleships
                 if (damagedShipCoordinate != coordinates)
                 {
                     //if at least one chunk has not been hit yet
-                    if (!board[damagedShipCoordinate.x, damagedShipCoordinate.y].HasFlag(BoardFieldStatus.AlreadyFiredUpon))
+                    if (!Board.GetFieldStatus(damagedShipCoordinate).HasFlag(BoardFieldStatus.AlreadyFiredUpon))
                     {
                         return null;
                     }
                 }
             }
             return damagedShip;
-        }
-
-        private void SetupBoard(GameOptions gameOptions)
-        {
-            board = new BoardFieldStatus[gameOptions.BoardWidth, gameOptions.BoardHeight];
-            for (int x = 0; x <= board.GetUpperBound(0); x++)
-            {
-                for (int y = 0; y <= board.GetUpperBound(1); y++)
-                {
-                    board[x, y] = BoardFieldStatus.Empty;
-                }
-            }
-            ArrangeShips(gameOptions);
-
-            gameStatus = GameStatus.BoardInitialized;
         }
     }
 }

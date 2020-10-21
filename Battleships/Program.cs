@@ -36,12 +36,15 @@ namespace Battleships
                     case ShotResult.Miss:
                         Console.WriteLine("You missed!");
                         break;
+
                     case ShotResult.Hit:
                         Console.WriteLine("You hit a ship!");
                         break;
+
                     case ShotResult.Sunk:
                         Console.WriteLine("You sunk the ship!");
                         break;
+
                     case ShotResult.GameWon:
                         Console.WriteLine("You WON the game, congratulations!");
                         Console.WriteLine("The game is now finished. Press any key to close the window.");
@@ -60,7 +63,7 @@ namespace Battleships
 
             if (int.TryParse(coordinates[0], out int x) && int.TryParse(coordinates[1], out int y))
             {
-                if (x <= gameObject.Board.GetUpperBound(0)+1 && y <= gameObject.Board.GetUpperBound(1)+1)
+                if (x <= gameObject.GameOptions.BoardWidth && y <= gameObject.GameOptions.BoardHeight)
                 {
                     return (x, y);
                 }
@@ -74,17 +77,17 @@ namespace Battleships
             Console.WriteLine("=======================");
             Console.WriteLine("Current board:");
             Console.Write("  ");
-            for (int i = 0; i <= gameObject.Board.GetUpperBound(0); i++)
+            for (int i = 0; i < gameObject.GameOptions.BoardWidth; i++)
             {
                 Console.Write(i + 1);
             }
             Console.WriteLine();
-            for (int x = 0; x <= gameObject.Board.GetUpperBound(0); x++)
+            for (int x = 0; x < gameObject.GameOptions.BoardWidth; x++)
             {
                 Console.Write((x + 1).ToString().PadRight(2));
-                for (int y = 0; y <= gameObject.Board.GetUpperBound(1); y++)
+                for (int y = 0; y < gameObject.GameOptions.BoardHeight; y++)
                 {
-                    Console.Write(GetFieldStatusAbbreviation(gameObject.Board[x, y]));
+                    Console.Write(GetFieldStatusAbbreviation(gameObject.Board.GetFieldStatus((x, y))));
                 }
                 Console.WriteLine();
             }

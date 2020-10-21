@@ -1,106 +1,13 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Battleships.Tests
 {
-    class GameTests
+    class FireShotTests
     {
-        [Test]
-        public void StartSimpleGame()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions()
-            {
-                BoardHeight = 10,
-                BoardWidth = 10,
-                Ships = new List<int> { 1 }
-            };
-
-            game.Initialize(gameOptions);
-        }
-
-        [Test]
-        public void StartGameWithNoBoard()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions()
-            {
-                BoardHeight = 0,
-                BoardWidth = 0,
-                Ships = new List<int> { 1 }
-            };
-
-            Assert.Throws(typeof(ArgumentException), () => game.Initialize(gameOptions));
-        }
-
-        [Test]
-        public void StartGameWithTooManyShips()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions()
-            {
-                BoardHeight = 2,
-                BoardWidth = 2,
-                Ships = new List<int> { 8, 4, 6, 4, 4, 7, 5, 7, 9, 5, 8, 9, 6, 2 }
-            };
-
-            Assert.Throws(typeof(InvalidOperationException), () => game.Initialize(gameOptions));
-        }
-
-        [Test]
-        public void StartGameWithTooBigShips()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions()
-            {
-                BoardHeight = 10,
-                BoardWidth = 10,
-                Ships = new List<int> { 11 }
-            };
-
-            Assert.Throws(typeof(InvalidOperationException), () => game.Initialize(gameOptions));
-        }
-
-        [Test]
-        public void StartGameWithBigBoard()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions()
-            {
-                BoardHeight = 10000,
-                BoardWidth = 10000,
-                Ships = new List<int> { 8, 4, 6, 4, 4, 7, 5, 7, 9, 5, 8, 9, 6, 2 }
-            };
-
-            game.Initialize(gameOptions);
-        }
-
-        [Test]
-        public void StartGameWithEmptyOptions()
-        {
-            var game = new Game();
-
-            var gameOptions = new GameOptions();
-
-            Assert.Throws(typeof(ArgumentException), () => game.Initialize(gameOptions));
-        }
-
-        [Test]
-        public void StartGameWithNullOptions()
-        {
-            var game = new Game();
-
-            Assert.Throws(typeof(ArgumentException), () => game.Initialize(null));
-        }
-
         [Test]
         public void FireSimpleShot()
         {
@@ -157,7 +64,7 @@ namespace Battleships.Tests
 
             Assert.Throws(typeof(InvalidOperationException), () => game.Fire((5, 5)));
         }
-        
+
         [Test]
         public void FireShotsAndAssertHitCount()
         {
@@ -173,12 +80,12 @@ namespace Battleships.Tests
             game.Initialize(gameOptions);
 
             int hitCount = 0;
-            for (int x = 0; x < gameOptions.BoardWidth; x++)
+            for (int x = 1; x <= gameOptions.BoardWidth; x++)
             {
-                for (int y = 0; y < gameOptions.BoardHeight; y++)
+                for (int y = 1; y <= gameOptions.BoardHeight; y++)
                 {
                     var shotResult = game.Fire((x, y));
-                    if (shotResult == ShotResult.Hit  || shotResult == ShotResult.Sunk)
+                    if (shotResult == ShotResult.Hit || shotResult == ShotResult.Sunk || shotResult == ShotResult.GameWon)
                     {
                         hitCount++;
                     }
@@ -203,11 +110,12 @@ namespace Battleships.Tests
             game.Initialize(gameOptions);
 
             int sunkCount = 0;
-            for (int x = 0; x < gameOptions.BoardWidth; x++)
+            for (int x = 1; x <= gameOptions.BoardWidth; x++)
             {
-                for (int y = 0; y < gameOptions.BoardHeight; y++)
+                for (int y = 1; y <= gameOptions.BoardHeight; y++)
                 {
-                    if (game.Fire((x, y)) == ShotResult.Sunk)
+                    var shotResult = game.Fire((x, y));
+                    if (shotResult == ShotResult.Sunk || shotResult == ShotResult.GameWon)
                     {
                         sunkCount++;
                     }
