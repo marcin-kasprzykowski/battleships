@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Battleships.Tests
 {
-    class FireShotTests
+    internal class FireShotTests
     {
         [Test]
         public void FireSimpleShot()

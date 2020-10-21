@@ -1,12 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace Battleships.Tests
 {
-    class GameInitializationTests
+    internal class GameInitializationTests
     {
         [Test]
         public void StartSimpleGame()
@@ -129,6 +127,6 @@ namespace Battleships.Tests
             var game = new Game();
 
             Assert.Throws(typeof(ArgumentException), () => game.Initialize(null));
-        }        
+        }
     }
 }
